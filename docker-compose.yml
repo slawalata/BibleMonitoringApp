@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql-server
+    ports:
+      - "3306:3306" # Map MySQL default port
+    environment:
+      MYSQL_ROOT_PASSWORD: password # Set root password
+    volumes:
+      - mysql_data:/var/lib/mysql # Persist database data
+
+volumes:
+  mysql_data:
