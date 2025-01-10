@@ -59,7 +59,7 @@ CREATE TABLE `admin_table` (
 --
 
 INSERT INTO `admin_table` (`id_admin`, `admin_name`, `username`, `password`, `phone`) VALUES
-(1, 'Dessy Waiman', 'dessywaiman', '5f4dcc3b5aa765d61d8327deb882cf99', '08123456789');
+(1, 'Dessy Waiman', 'dessywaiman', 'ac75c048c7bfd7be1d291cac32849d8a', '08123456789');
 
 -- --------------------------------------------------------
 
