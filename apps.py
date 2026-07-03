@@ -3,6 +3,7 @@ from functools import wraps
 
 from dotenv import load_dotenv
 from flask import Flask, session, redirect, render_template, request
+from flask_jwt_extended import JWTManager
 from sqlalchemy import create_engine
 
 from config import Config
@@ -13,6 +14,9 @@ def create_app():
     app = Flask(__name__)
     app.secret_key = '0718dc97689e5d255508a53ea5af7b57'
     load_dotenv()
+    app = init_db(app)
+    JWTManager(app)
+
     return app
 
 
@@ -25,7 +29,7 @@ def init_db(_app):
 
 
 app = create_app()
-app = init_db(app)
+
 
 def auth(f):
     @wraps(f)

@@ -15,3 +15,5 @@ def test_should_add_return_one_jafung(app, client):
                 "number": 'chapter_number'
             }
         )
+
+        print(create_staff_response.json)

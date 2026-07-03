@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from apps import create_app
+from apps import create_app, init_db
 from testcontainers.mysql import MySqlContainer
 
 os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "true"  # optional (so Ryuk won't kill the container)
@@ -33,6 +33,7 @@ def app(mysql_container):
     # to enable from all source when calling url for test.
     # Config.HRD_UI_URL = "*"
     app = create_app()
+    app = init_db(app)
     app.config.update({"TESTING": True, "DEBUG": True, "PROPAGATE_EXCEPTIONS": True})
 
     yield app
