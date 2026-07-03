@@ -15,7 +15,7 @@ class Chapter:
                             FROM 
                                 chapter_table c
                         """)
-            data = connection.execute(query)
+            data = current_app.connection.execute(query)
             returnData = {}
             for row in data:
                 returnData[row[1]] = row[0]
@@ -50,7 +50,7 @@ class Chapter:
                                 *
                                 from example;
                         """)
-            data = connection.execute(query)
+            data = current_app.connection.execute(query)
             returnData = []
             for row in data:
                 returnData.append({row[0]: {'min': row[1], 'max': row[2]}})
@@ -83,7 +83,7 @@ class Chapter:
                             ORDER BY
                                 MIN(c.id_chapter);
                         """)
-            data = connection.execute(query)
+            data = current_app.connection.execute(query)
             returnData = []
             for row in data:
                 returnData.append({
@@ -118,7 +118,7 @@ class Chapter:
                             ORDER BY c.number;
                         """)
             params = {"book_name": book_name}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({
@@ -153,7 +153,7 @@ class Chapter:
                             ORDER BY c.number;
                         """)
             params = {"book_name": book_name, "number": number}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({

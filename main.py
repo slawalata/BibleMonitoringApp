@@ -1,4 +1,3 @@
-import api
 from apps import app, auth, render_template
 
 @app.route('/')
@@ -37,5 +36,4 @@ def admin(*args, **kwargs):
     return render_template('admin.html', **kwargs)
 
 if __name__ == '__main__':
-
     app.run(debug=True, port=8080)

@@ -10,7 +10,7 @@ class Church:
         response = {'status': False, 'msg': 'Database error'}
         try:
             query = text("SELECT * FROM church_table;")
-            data = connection.execute(query)
+            data = current_app.connection.execute(query)
             data = data.fetchall()
             returnData = []
             for row in data:
@@ -44,7 +44,7 @@ class Church:
         try:
             query = text("INSERT INTO church_table (id_church, church_name, phone, address) VALUES (NULL, :church_name, :phone, :address);")
             params = {'church_name': church_name, 'phone': phone, 'address': address}
-            connection.execute(query, params)
+            current_app.connection.execute(query, params)
             # connection.commit()
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
@@ -70,7 +70,7 @@ class Church:
             else:
                 query = text("UPDATE church_table SET church_name = :church_name, phone = :phone, address = :address WHERE id_church = :id_church;")
                 params = {'id_church': id_church, 'church_name': church_name, 'phone': phone, 'address': address}
-                connection.execute(query, params)
+                current_app.connection.execute(query, params)
                 # connection.commit()
                 response = {'status': True, 'msg': 'Success'}
         except Exception as e:
@@ -94,7 +94,7 @@ class Church:
                 query = text("DELETE FROM church_table WHERE id_church = :id_church;")
                 
                 params = {"id_church": id_church}
-                connection.execute(query, params)
+                current_app.connection.execute(query, params)
                 # connection.commit()
                 response = {'status': True, 'msg': 'Success'}
         except Exception as e:
@@ -109,7 +109,7 @@ class Church:
                             church_name
                         FROM church_table;
                         """)
-            data = connection.execute(query)
+            data = current_app.connection.execute(query)
             returnData = []
             for row in data:
                 returnData.append(row[0])
@@ -132,7 +132,7 @@ class Church:
                         WHERE id_church = :id_church;
                         """)
             params = {"id_church": id_church}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append(row[0])

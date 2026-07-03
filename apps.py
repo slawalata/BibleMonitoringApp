@@ -1,10 +1,31 @@
 import hashlib
 from functools import wraps
-from flask import Flask, session, redirect, render_template, request, jsonify
+
+from dotenv import load_dotenv
+from flask import Flask, session, redirect, render_template, request
+from sqlalchemy import create_engine
+
+from config import Config
 from models.admin import Admin
 
-app = Flask(__name__)
-app.secret_key = '0718dc97689e5d255508a53ea5af7b57'
+
+def create_app():
+    app = Flask(__name__)
+    app.secret_key = '0718dc97689e5d255508a53ea5af7b57'
+    load_dotenv()
+    return app
+
+
+def init_db(_app):
+    connection_string = f"mysql+pymysql://{Config.DB_USER}:{Config.DB_PASSWORD}@{Config.DB_HOST}:{Config.DB_PORT}/{Config.DB_NAME}"
+    engine = create_engine(connection_string)
+    connection = engine.connect()
+    _app.connection = connection
+    return _app
+
+
+app = create_app()
+app = init_db(app)
 
 def auth(f):
     @wraps(f)
@@ -13,19 +34,24 @@ def auth(f):
             return redirect('/login')
         kwargs.update(session)
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("notfound.html")
 
+
 @app.errorhandler(500)
 def error(e):
     return render_template("error.html")
 
+
 @app.errorhandler(403)
 def forbidden(e):
     return render_template("forbidden.html")
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def loginPage():
@@ -49,13 +75,14 @@ def loginPage():
                 respone = redirect('/')
             else:
                 respone['msg'] = 'Wrong username or password!'
-                respone['code'] = 401       
+                respone['code'] = 401
                 respone = render_template('login.html', **respone)
         else:
             respone['msg'] = 'Wrong username/password'
-            respone['code'] = 401       
+            respone['code'] = 401
             respone = render_template('login.html', **respone)
     return respone
+
 
 @app.route('/logout')
 @auth

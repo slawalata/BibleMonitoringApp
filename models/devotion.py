@@ -17,7 +17,7 @@ class Devotion:
                             c.chapter_name 
                          FROM devotion_table d
                          JOIN chapter_table c ON d.id_chapter = c.id_chapter;""")
-            data = connection.execute(query)
+            data = current_app.connection.execute(query)
             returnData = []
             for row in data:
                 returnData.append({
@@ -51,7 +51,7 @@ class Devotion:
         try:
             query = text("INSERT INTO devotion_table (id_devotion, title, content, id_chapter) VALUES (NULL, :title, :content, :id_chapter);")
             params = {'title': title, 'content': content, 'id_chapter': id_chapter}
-            connection.execute(query, params)
+            current_app.connection.execute(query, params)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'Failed to insert new devotion'
@@ -73,7 +73,7 @@ class Devotion:
         try:
             query = text("UPDATE devotion_table SET title = :title, content = :content, id_chapter = :id_chapter WHERE id_devotion = :id_devotion;")
             params = {'id_devotion': id_devotion, 'title': title, 'content': content, 'id_chapter': id_chapter}
-            connection.execute(query, params)
+            current_app.connection.execute(query, params)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'Failed to update devotion'
@@ -93,7 +93,7 @@ class Devotion:
             query = text("DELETE FROM devotion_table WHERE id_devotion = :id_devotion;")
             
             params = {"id_devotion": id_devotion}
-            connection.execute(query, params)
+            current_app.connection.execute(query, params)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'Cannot delete devotion!'
@@ -114,7 +114,7 @@ class Devotion:
                          JOIN chapter_table c ON d.id_chapter = c.id_chapter
                          WHERE d.id_devotion = :id_devotion;""")
             params = {'id_devotion': id_devotion}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({
