@@ -1,8 +1,12 @@
 import os
 
 import pytest
+from sqlalchemy import text
+
 from apps import create_app, init_db
 from testcontainers.mysql import MySqlContainer
+
+from config import Config
 
 os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "true"  # optional (so Ryuk won't kill the container)
 os.environ["TESTCONTAINERS_REUSE_ENABLE"] = "true"
@@ -11,21 +15,21 @@ os.environ["TESTCONTAINERS_REUSE_ENABLE"] = "true"
 @pytest.fixture(scope="session")
 def mysql_container():
     with MySqlContainer(
-        image="mysql:8.4",
-        username="test",
-        password="test",
-        dbname="test_db",
+            image="mysql:8.4",
+            username="test",
+            password="test",
+            dbname=Config.DB_NAME,
     ) as mysql:
+        Config.DB_HOST = mysql.get_container_host_ip()
+        Config.DB_PORT = str(mysql.get_exposed_port(3306))
+        Config.DB_USER = mysql.username
+        Config.DB_PASSWORD = mysql.password
 
-        os.environ["DB_HOST"] = mysql.get_container_host_ip()
-        os.environ["DB_PORT"] = str(mysql.get_exposed_port(3306))
-        os.environ["DB_USER"] = mysql.username
-        os.environ["DB_PASSWORD"] = mysql.password
-        os.environ["DB_NAME"] = mysql.dbname
-
+        print("##########")
+        print(f"IP:{mysql.get_container_host_ip()}, PORT:{mysql.get_exposed_port(3306)}")
+        print(f"USER_NAME:{mysql.username}, PASS:{mysql.password}")
+        print("##########")
         yield mysql
-
-
 
 
 @pytest.fixture()
@@ -35,6 +39,17 @@ def app(mysql_container):
     app = create_app()
     app = init_db(app)
     app.config.update({"TESTING": True, "DEBUG": True, "PROPAGATE_EXCEPTIONS": True})
+    with open("create_table_script.sql") as f:
+        sql = f.read()
+
+        for stmt in sql.split(";"):
+            stmt = stmt.strip()
+            if stmt:
+                print(f"EXECUTED SQL : {stmt}")
+                app.connection.execute(text(stmt))
+                print("######################")
+                print(f"SUCCESS")
+                print("######################")
 
     yield app
 

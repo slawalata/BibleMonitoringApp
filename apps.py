@@ -4,7 +4,7 @@ from functools import wraps
 from dotenv import load_dotenv
 from flask import Flask, session, redirect, render_template, request
 from flask_jwt_extended import JWTManager
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 from api import init_api
 from config import Config

@@ -43,3 +43,4 @@ pytest
 flask-pytest
 flask-cors
 flask-jwt-extended
+alembic
