@@ -1,4 +1,6 @@
-from models import connection, text
+from flask import current_app
+from sqlalchemy import text
+
 
 class Chapter:
     def get_all_chapters(self):
@@ -9,26 +11,25 @@ class Chapter:
         """
         response = {'status': False, 'msg': 'Database error'}
         try:
-            query = text("""SELECT 
-                                c.id_chapter,
+            query = text("""
+                         SELECT c.id_chapter,
                                 c.chapter_name
-                            FROM 
-                                chapter_table c
-                        """)
+                         FROM chapter_table c
+                         """)
             data = current_app.connection.execute(query)
             returnData = {}
             for row in data:
                 returnData[row[1]] = row[0]
-        
+
             response = {
-                'status': True, 
-                'msg': 'Success', 
+                'status': True,
+                'msg': 'Success',
                 'data': returnData
             }
         except Exception as e:
             response['msg'] = f'Error: {str(e)}'
         return response
-    
+
     def get_master_chapter(self):
         """ Get all the chapter booknames and its max and min chapter numbers.
 
@@ -37,28 +38,24 @@ class Chapter:
         """
         response = {'status': False, 'msg': 'Database error'}
         try:
-            query = text("""WITH example AS (
-                                SELECT 
-                                    c.book_name,
-                                    min(c.number) as minimum,
-                                    max(c.number) as maximum
-                                from chapter_table c
-                                group by c.book_name
-                                order by min(c.id_chapter)
-                            )
-                            SELECT 
-                                *
-                                from example;
-                        """)
+            query = text("""WITH example AS (SELECT c.book_name,
+                                                    min(c.number) as minimum,
+                                                    max(c.number) as maximum
+                                             from chapter_table c
+                                             group by c.book_name
+                                             order by min(c.id_chapter))
+                            SELECT *
+                            from example;
+                         """)
             data = current_app.connection.execute(query)
             returnData = []
             for row in data:
                 returnData.append({row[0]: {'min': row[1], 'max': row[2]}})
                 # returnData[row[0]] = {'min': row[1], 'max': row[2]}
-        
+
             response = {
-                'status': True, 
-                'msg': 'Success', 
+                'status': True,
+                'msg': 'Success',
                 'data': returnData
             }
         except Exception as e:
@@ -73,16 +70,12 @@ class Chapter:
         """
         response = {'status': False, 'msg': 'Database error'}
         try:
-            query = text("""SELECT 
-                                c.book_name,
-                                GROUP_CONCAT(c.number ORDER BY c.id_chapter ASC SEPARATOR ', ') AS all_numbers
-                            FROM 
-                                chapter_table c
-                            GROUP BY 
-                                c.book_name
-                            ORDER BY
-                                MIN(c.id_chapter);
-                        """)
+            query = text("""SELECT c.book_name,
+                                   GROUP_CONCAT(c.number ORDER BY c.id_chapter ASC SEPARATOR ', ') AS all_numbers
+                            FROM chapter_table c
+                            GROUP BY c.book_name
+                            ORDER BY MIN(c.id_chapter);
+                         """)
             data = current_app.connection.execute(query)
             returnData = []
             for row in data:
@@ -90,16 +83,16 @@ class Chapter:
                     'book_name': row[0],
                     'num_of_chapters': row[1]
                 })
-        
+
             response = {
-                'status': True, 
-                'msg': 'Success', 
+                'status': True,
+                'msg': 'Success',
                 'data': returnData
             }
         except Exception as e:
             response['msg'] = f'Error: {str(e)}'
         return response
-    
+
     def get_chapters(self, book_name):
         """ Get all the chapter numbers of a given book
 
@@ -111,12 +104,11 @@ class Chapter:
         """
         response = {'status': False, 'msg': 'Database error'}
         try:
-            query = text("""SELECT 
-                                c.number 
+            query = text("""SELECT c.number
                             FROM chapter_table c
                             WHERE c.book_name = :book_name
                             ORDER BY c.number;
-                        """)
+                         """)
             params = {"book_name": book_name}
             data = current_app.connection.execute(query, params)
             returnData = []
@@ -124,16 +116,16 @@ class Chapter:
                 returnData.append({
                     'chapter_number': row[0]
                 })
-        
+
             response = {
-                'status': True, 
-                'msg': 'Success', 
+                'status': True,
+                'msg': 'Success',
                 'data': returnData
             }
         except Exception as e:
             response['msg'] = f'Error: {str(e)}'
         return response
-    
+
     def get_chapter_id(self, book_name, number):
         """ Get the chapter id of a certain chapter
 
@@ -146,12 +138,12 @@ class Chapter:
         """
         response = {'status': False, 'msg': 'Database error'}
         try:
-            query = text("""SELECT 
-                                c.id_chapter
+            query = text("""SELECT c.id_chapter
                             FROM chapter_table c
-                            WHERE c.book_name = :book_name AND c.number = :number
+                            WHERE c.book_name = :book_name
+                              AND c.number = :number
                             ORDER BY c.number;
-                        """)
+                         """)
             params = {"book_name": book_name, "number": number}
             data = current_app.connection.execute(query, params)
             returnData = []
@@ -159,10 +151,10 @@ class Chapter:
                 returnData.append({
                     'id_chapter': row[0]
                 })
-        
+
             response = {
-                'status': True, 
-                'msg': 'Success', 
+                'status': True,
+                'msg': 'Success',
                 'data': returnData
             }
         except Exception as e:

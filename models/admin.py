@@ -17,7 +17,7 @@ class Admin:
         try:
             query = text("SELECT * FROM admin_table WHERE username = :username and password = :password;")
             params = {"username": username, "password": password}
-            data = current_app.current_app.connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             rows = data.fetchone()
             if rows:
                 returnData = {

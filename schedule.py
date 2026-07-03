@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
+
+from flask import current_app
+
 from utils import BIBLECHAPTERSIDX
-from models import connection, text
+from sqlalchemy import  text
 
 class Schedule:
     def __init__(self):

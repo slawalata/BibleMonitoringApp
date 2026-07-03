@@ -1,4 +1,5 @@
-from models import connection, text
+from flask import current_app
+from sqlalchemy import text
 
 class Schedule:
     def get_todays_schedule(self, id_group):

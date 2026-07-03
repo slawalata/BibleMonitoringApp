@@ -1,6 +1,6 @@
-from models import connection, text
-from models.chapter import Chapter
 import sqlalchemy
+from flask import current_app
+from sqlalchemy import text
 
 
 class Report:
