@@ -1,6 +1,6 @@
-from models import connection, text
-from models.chapter import Chapter
 import sqlalchemy
+from flask import current_app
+from sqlalchemy import text
 
 
 class Report:
@@ -20,7 +20,7 @@ class Report:
             query = text(
                 "INSERT INTO report_table (id_report, date, id_member, report) VALUES (NULL, :date, :id_member, :report);")
             params = {'date': date, 'id_member': id_member, 'report': report}
-            connection.execute(query, params)
+            current_app.connection.execute(query, params)
             # connection.commit()
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
@@ -41,7 +41,7 @@ class Report:
         try:
             query = text("INSERT INTO report_details_table (id_report, id_chapter) VALUES (:id_report, :id_chapter);")
             params = {'id_report': id_report, 'id_chapter': id_chapter}
-            connection.execute(query, params)
+            current_app.connection.execute(query, params)
 
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
@@ -69,7 +69,7 @@ class Report:
                           JOIN chapter_table c ON rd.id_chapter = c.id_chapter
                       GROUP BY r.id_report, m.member_name;
                          """)
-            data = connection.execute(query)
+            data = current_app.connection.execute(query)
             returnData = []
             for row in data:
                 returnData.append({
@@ -113,7 +113,7 @@ class Report:
                          """)
 
             params = {'id_report': id_report, 'date': date, 'id_member': id_member, 'report': report}
-            connection.execute(query, params)
+            current_app.connection.execute(query, params)
 
             # query2 = text("""UPDATE report""")
             response = {'status': True, 'msg': 'Success'}
@@ -140,7 +140,7 @@ class Report:
                          """)
 
             params = {'id_report_details': id_report_details, 'id_chapter': id_chapter}
-            connection.execute(query, params)
+            current_app.connection.execute(query, params)
 
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
@@ -160,11 +160,11 @@ class Report:
         try:
             query = text("DELETE FROM report_details_table WHERE id_report = :id_report;")
             params = {"id_report": id_report}
-            connection.execute(query, params)
+            current_app.connection.execute(query, params)
 
             query2 = text("DELETE FROM report_table WHERE id_report = :id_report;")
             params2 = {"id_report": id_report}
-            connection.execute(query2, params2)
+            current_app.connection.execute(query2, params2)
             # connection.commit()
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
@@ -184,7 +184,7 @@ class Report:
         try:
             query = text("DELETE FROM report_details_table WHERE id_report_details = :id_report_details;")
             params = {"id_report_details": id_report_details}
-            connection.execute(query, params)
+            current_app.connection.execute(query, params)
 
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
@@ -207,7 +207,7 @@ class Report:
                          VALUES (:id_member, :date, :report);
                          """)
 
-            result: sqlalchemy.engine.cursor.LegacyCursorResult = connection.execute(query, data_to_db)
+            result: sqlalchemy.engine.cursor.LegacyCursorResult = current_app.connection.execute(query, data_to_db)
             inserted_data = self.get_last_index().get('data')
             parsed_data = data_to_db['parsed']
 
@@ -231,7 +231,7 @@ class Report:
                          FROM report_table;
                          """)
 
-            data = connection.execute(query)
+            data = current_app.connection.execute(query)
             result = data.fetchone()
             response = {'status': True, 'msg': 'Success', 'data': result[0]}
         except Exception as e:
@@ -259,7 +259,7 @@ class Report:
                          ORDER BY rt.date;
                          """)
             params = {'id_group': id_group}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({
@@ -296,7 +296,7 @@ class Report:
                          ORDER BY rt.date;
                          """)
             params = {'id_group': id_group}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({
@@ -333,7 +333,7 @@ class Report:
                          ORDER BY rt.date;
                          """)
             params = {'id_group': id_group}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({
@@ -375,7 +375,7 @@ class Report:
                            AND m.id_group = :id_group
                          """)
             params = {'id_group': id_group, 'date': date, 'book_name': book_name, 'number': number}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
 
             returnData = []
             for row in data:
@@ -414,7 +414,7 @@ class Report:
                          ORDER BY last_read.last_read_chapter_id;
                          """)
             params = {'id_group': id_group}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = []
             for row in data:
                 if row[1] == 'null':
@@ -449,7 +449,7 @@ class Report:
                          WHERE g.id_group = :id_group;
                          """)
             params = {'id_group': id_group}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = 0
             for row in data:
                 returnData = row[0]
@@ -495,7 +495,7 @@ class Report:
                                   AND m.id_group=:id_group;
                                 """)
 
-            data_ontime = connection.execute(query_ontime, params)
+            data_ontime = current_app.connection.execute(query_ontime, params)
 
             for row in data_ontime:
                 returnData['ontime'] = row[0]
@@ -523,7 +523,7 @@ class Report:
                                      AND s.id_group=:id_group
                                      AND m.id_group=:id_group;
                                    """)
-            data_7dayslate = connection.execute(query_7dayslate, params)
+            data_7dayslate = current_app.connection.execute(query_7dayslate, params)
 
             for row in data_7dayslate:
                 returnData['7_days'] = row[0]
@@ -551,7 +551,7 @@ class Report:
                                       AND s.id_group=:id_group
                                       AND m.id_group=:id_group;
                                     """)
-            data_1monthlate = connection.execute(query_1monthlate, params)
+            data_1monthlate = current_app.connection.execute(query_1monthlate, params)
 
             for row in data_1monthlate:
                 returnData['1_month'] = row[0]
@@ -578,7 +578,7 @@ class Report:
                                             AND s.id_group=:id_group
                                             AND m.id_group=:id_group;
                                           """)
-            data_more_than_1month = connection.execute(query_more_than_1month, params)
+            data_more_than_1month = current_app.connection.execute(query_more_than_1month, params)
 
             for row in data_more_than_1month:
                 returnData['more_than_1month'] = row[0]
@@ -598,7 +598,7 @@ class Report:
                          WHERE m.id_group = :id_group
                          """)
             params = {'id_group': id_group}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append(row[0])
@@ -621,7 +621,7 @@ class Report:
                          ORDER BY c.id_chapter DESC LIMIT 1;
                          """)
             params = {'id_member': id_member, 'date': date}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = {}
             for row in data:
                 returnData['id_chapter'] = row[0]

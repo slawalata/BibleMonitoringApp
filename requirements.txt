@@ -37,3 +37,10 @@ typing_extensions==4.11.0
 tzdata==2023.3
 Unidecode==1.2.0
 Werkzeug==3.0.3
+testcontainers==4.13.3
+jsonify==0.5
+pytest
+flask-pytest
+flask-cors
+flask-jwt-extended
+alembic

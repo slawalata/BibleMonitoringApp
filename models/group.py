@@ -1,4 +1,5 @@
-from models import connection, text
+from flask import current_app
+from sqlalchemy import  text
 
 class Group:
     def read(self):
@@ -22,7 +23,7 @@ class Group:
                         FROM group_table g
                         JOIN church_table c ON g.id_church = c.id_church;
                     """)
-            data = connection.execute(query)
+            data = current_app.connection.execute(query)
             returnData = []
             for row in data:
                 returnData.append({
@@ -62,7 +63,7 @@ class Group:
         try:
             query = text("INSERT INTO group_table (id_group, group_name, id_church, start_date, target_date, num_of_chapter, status) VALUES (NULL, :group_name, :id_church, :start_date, :target_date, :num_of_chapter, :status);")
             params = {'group_name': group_name, 'id_church': id_church, 'start_date': start_date, 'target_date': target_date, 'num_of_chapter': num_of_chapter, 'status': status}
-            connection.execute(query, params)
+            current_app.connection.execute(query, params)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'Failed to insert new group'
@@ -87,7 +88,7 @@ class Group:
         try:
             query = text("UPDATE group_table SET group_name = :group_name, id_church = :id_church, status = :status WHERE id_group = :id_group;")
             params = {'id_group': id_group, 'group_name': group_name, 'id_church': id_church, 'status': status}
-            connection.execute(query, params)
+            current_app.connection.execute(query, params)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'Failed to update group'
@@ -105,7 +106,7 @@ class Group:
                             ON DELETE CASCADE;
                     """)
             
-            connection.execute(query)
+            current_app.connection.execute(query)
 
             query2 = text("""
                         ALTER TABLE schedule_table
@@ -115,7 +116,7 @@ class Group:
                             ON DELETE CASCADE; 
                     """)
             
-            connection.execute(query2)
+            current_app.connection.execute(query2)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'Cannot delete group!'
@@ -142,7 +143,7 @@ class Group:
                         """)
                 
                 params = {"id_group": id_group}
-                connection.execute(query, params)
+                current_app.connection.execute(query, params)
                 response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'Cannot delete group!'
@@ -166,7 +167,7 @@ class Group:
                          """)
             
             params = {"id_group": id_group}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = ""
             for row in data:
                 returnData = row[0]
@@ -188,7 +189,7 @@ class Group:
                         g.id_group
                     FROM group_table g;
                     """)
-            data = connection.execute(query)
+            data = current_app.connection.execute(query)
             returnData = []
             for row in data:
                 returnData.append(row[0])
@@ -216,7 +217,7 @@ class Group:
                         ORDER BY id_group DESC
                         LIMIT 1;
                     """)
-            data = connection.execute(query)
+            data = current_app.connection.execute(query)
             returnData = 0
             for row in data:
                 returnData= row[0]
@@ -237,7 +238,7 @@ class Group:
                             group_name
                         FROM group_table;
                         """)
-            data = connection.execute(query)
+            data = current_app.connection.execute(query)
             returnData = []
             for row in data:
                 returnData.append(row[0])
@@ -260,7 +261,7 @@ class Group:
                         WHERE id_group = :id_group;
                         """)
             params = {"id_group": id_group}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append(row[0])

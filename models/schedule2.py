@@ -1,4 +1,5 @@
-from models import connection, text
+from flask import current_app
+from sqlalchemy import text
 
 class Schedule:
     def get_todays_schedule(self, id_group):
@@ -20,7 +21,7 @@ class Schedule:
                             GROUP BY s.date;
                         """)
             params = {"id_group": id_group}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({
@@ -64,7 +65,7 @@ class Schedule:
                             GROUP BY c.book_name;
                         """)
             params = {"id_group": id_group, "date": date}
-            data = connection.execute(query, params)
+            data = current_app.connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({
