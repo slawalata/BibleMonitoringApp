@@ -24,7 +24,6 @@ def test_should_add_return_one_jafung(app, client):
 
     # / load - data - devotion
     assert 200 is create_staff_response.status_code
-    print(create_staff_response)
 
     get_data_devotion_response = client.get(
         "/load-data-devotion",
@@ -34,5 +33,3 @@ def test_should_add_return_one_jafung(app, client):
     data = get_data_devotion_response.get_json()["data"][0]
     assert TITLE_DEVOTION == data["title"]
     assert CONTENT_DEVOTION == data["content"]
-
-    print(data["title"])
