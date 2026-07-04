@@ -1,9 +1,6 @@
 from datetime import datetime, timedelta
-
-from flask import current_app
-
 from utils import BIBLECHAPTERSIDX
-from sqlalchemy import  text
+from models import connection, text
 
 class Schedule:
     def __init__(self):
@@ -47,7 +44,7 @@ class Schedule:
                             GROUP BY s.date;
                         """)
             params = {"id_group": id_group}
-            data = current_app.connection.execute(query, params)
+            data = connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({
@@ -91,7 +88,7 @@ class Schedule:
                             GROUP BY c.book_name;
                         """)
             params = {"id_group": id_group, "date": date}
-            data = current_app.connection.execute(query, params)
+            data = connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({
@@ -115,7 +112,7 @@ class Schedule:
         try:
             query = text("INSERT INTO schedule_table (id_group, date) VALUES (:id_group, :date);")
             params = {'id_group': id_group, 'date': date}
-            current_app.connection.execute(query, params)
+            connection.execute(query, params)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'INSERT SCHEDULE | {str(e)}'
@@ -128,7 +125,7 @@ class Schedule:
         try:
             query = text("INSERT INTO schedule_details_table (id_schedule, id_chapter) VALUES (:id_schedule, :id_chapter);")
             params = {'id_schedule': id_schedule, 'id_chapter': id_chapter}
-            current_app.connection.execute(query, params)
+            connection.execute(query, params)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'INSERT SCHEDULE DETAILS | {str(e)}'
@@ -139,7 +136,7 @@ class Schedule:
     #     try:
     #         query = text("DELETE FROM schedule_table WHERE id_group = :id_group;")        
     #         params = {"id_group": id_group}
-    #         current_app.connection.execute(query, params)
+    #         connection.execute(query, params)
     #         response = {'status': True, 'msg': 'Success'}
     #     except Exception as e:
     #         response['msg'] = f'Failed to delete schedule'
@@ -150,7 +147,7 @@ class Schedule:
     #     try:
     #         query = text("DELETE FROM schedule_details_table WHERE id_schedule = :id_schedule;")        
     #         params = {"id_schedule": id_schedule}
-    #         current_app.connection.execute(query, params)
+    #         connection.execute(query, params)
     #         # connection.commit()
     #         response = {'status': True, 'msg': 'Success'}
     #     except Exception as e:
@@ -166,7 +163,7 @@ class Schedule:
                         ORDER BY id_schedule DESC
                         LIMIT 1;
                     """)
-            data = current_app.connection.execute(query)
+            data = connection.execute(query)
             returnData = 0
             for row in data:
                 returnData= row[0]
