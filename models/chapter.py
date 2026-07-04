@@ -14,7 +14,7 @@ class Chapter:
             query = text("""
                          SELECT c.id_chapter,
                                 c.chapter_name
-                         FROM chapter_table c
+                           FROM chapter_table c
                          """)
             data = current_app.connection.execute(query)
             returnData = {}
@@ -138,11 +138,12 @@ class Chapter:
         """
         response = {'status': False, 'msg': 'Database error'}
         try:
-            query = text("""SELECT c.id_chapter
-                            FROM chapter_table c
-                            WHERE c.book_name = :book_name
-                              AND c.number = :number
-                            ORDER BY c.number;
+            query = text("""
+                            SELECT c.id_chapter
+                              FROM chapter_table c
+                             WHERE c.book_name = :book_name
+                               AND c.number = :number
+                          ORDER BY c.number;
                          """)
             params = {"book_name": book_name, "number": number}
             data = current_app.connection.execute(query, params)

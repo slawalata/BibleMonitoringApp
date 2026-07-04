@@ -41,16 +41,10 @@ def app(mysql_container):
     app.config.update({"TESTING": True, "DEBUG": True, "PROPAGATE_EXCEPTIONS": True})
     with open("create_table_script.sql") as f:
         sql = f.read()
-
         for stmt in sql.split(";"):
             stmt = stmt.strip()
             if stmt:
-                print(f"EXECUTED SQL : {stmt}")
                 app.connection.execute(text(stmt))
-                print("######################")
-                print(f"SUCCESS")
-                print("######################")
-
     yield app
 
 

@@ -2,27 +2,37 @@ from flask_jwt_extended import create_access_token
 
 
 def test_should_add_return_one_jafung(app, client):
-    with app.app_context():
-        access_token = create_access_token(identity="testuser")
-        client.post(
-            "/login",
-            data={
-                "username": "admin",
-                "password": "password",
-            },
-        )
-        create_staff_response = client.post(
-            "/add-data-devotion",
-            headers={"Authorization": f"Bearer {access_token}"},
-            data={
-                "title": "Judul",
-                "content": 'content',
-                "book_name": 'book_name',
-                "number": 'chapter_number'
-            }
-        )
+    client.post(
+        "/login",
+        data={
+            "username": "dessywaiman",
+            "password": "password",
+        },
+    )
+    TITLE_DEVOTION = "Judul_kejadian_1"
+    CONTENT_DEVOTION = 'Content_kejadian_1'
+    create_staff_response = client.post(
+        "/add-data-devotion",
+        data={
+            "title": TITLE_DEVOTION,
+            "content": CONTENT_DEVOTION,
+            "book_name": 'kejadian',
+            "chapter_number": '1'
+        },
+        follow_redirects=True
+    )
 
-        for rule in app.url_map.iter_rules():
-            print(rule)
+    # / load - data - devotion
+    assert 200 is create_staff_response.status_code
+    print(create_staff_response)
 
-        print(create_staff_response.json)
+    get_data_devotion_response = client.get(
+        "/load-data-devotion",
+    )
+    assert 200 is get_data_devotion_response.status_code
+    assert 1 == len(get_data_devotion_response.get_json()["data"])
+    data = get_data_devotion_response.get_json()["data"][0]
+    assert TITLE_DEVOTION == data["title"]
+    assert CONTENT_DEVOTION == data["content"]
+
+    print(data["title"])
