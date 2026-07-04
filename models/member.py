@@ -1,5 +1,4 @@
-from flask import current_app
-from sqlalchemy import  text
+from models import connection, text
 
 class Member:
     def read(self):
@@ -19,7 +18,7 @@ class Member:
                             member_table.status
                         FROM member_table
                         JOIN group_table ON member_table.id_group = group_table.id_group;""")
-            data = current_app.connection.execute(query)
+            data = connection.execute(query)
             returnData = []
             for row in data:
                 returnData.append({
@@ -55,7 +54,7 @@ class Member:
         try:
             query = text("INSERT INTO member_table (id_member, member_name, phone, id_group, status) VALUES (NULL, :member_name, :phone, :id_group, :status);")
             params = {'member_name': member_name, 'phone': phone, 'id_group': id_group, 'status': status}
-            current_app.connection.execute(query, params)
+            connection.execute(query, params)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'Failed to insert new member'
@@ -81,7 +80,7 @@ class Member:
             else:
                 query = text("UPDATE member_table SET member_name = :member_name, phone = :phone, id_group = :id_group, status = :status WHERE id_member = :id_member;")
                 params = {'id_member': id_member, 'member_name': member_name, 'phone': phone, 'id_group': id_group, 'status': status}
-                current_app.connection.execute(query, params)
+                connection.execute(query, params)
                 # connection.commit()
                 response = {'status': True, 'msg': 'Success'}
         except Exception as e:
@@ -100,7 +99,7 @@ class Member:
                             ON DELETE CASCADE;
                     """)
             
-            current_app.connection.execute(query)
+            connection.execute(query)
             
             query2 = text("""
                         ALTER TABLE report_table
@@ -110,7 +109,7 @@ class Member:
                             ON DELETE CASCADE; 
                     """)
             
-            current_app.connection.execute(query2)
+            connection.execute(query2)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'Cannot delete group!'
@@ -134,7 +133,7 @@ class Member:
                 query = text("DELETE FROM member_table WHERE id_member = :id_member;")
                 
                 params = {"id_member": id_member}
-                current_app.connection.execute(query, params)
+                connection.execute(query, params)
                 # connection.commit()
                 response = {'status': True, 'msg': 'Success'}
         except Exception as e:
@@ -161,7 +160,7 @@ class Member:
                         ORDER BY m.member_name ASC;
                         """)
             params = {"id_group": id_group}
-            data = current_app.connection.execute(query, params)
+            data = connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({
@@ -190,7 +189,7 @@ class Member:
         try:
             query = text("SELECT COUNT(*) AS number_of_members FROM member_table WHERE id_group = :id_group;")
             params = {"id_group": id_group}
-            data = current_app.connection.execute(query, params)
+            data = connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({
@@ -214,7 +213,7 @@ class Member:
                         FROM member_table m
                         ORDER BY m.member_name ASC;
                         """)
-            data = current_app.connection.execute(query)
+            data = connection.execute(query)
             returnData = []
             for row in data:
                 returnData.append(row[0])
@@ -237,7 +236,7 @@ class Member:
                         WHERE id_member = :id_member;
                         """)
             params = {"id_member": id_member}
-            data = current_app.connection.execute(query, params)
+            data = connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append(row[0])

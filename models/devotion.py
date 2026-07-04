@@ -1,6 +1,4 @@
-from flask import current_app
-from sqlalchemy import text
-
+from models import connection, text
 
 class Devotion:
     def read(self):
@@ -11,18 +9,15 @@ class Devotion:
         """
         response = {'status': False, 'msg': 'Database error'}
         try:
-            ##@formatter:off
-            query = text("""SELECT d.id_devotion,
-                                   d.title,
-                                   d.content,
-                                   d.id_chapter,
-                                   c.chapter_name
-                              FROM devotion_table d
-                              JOIN chapter_table c 
-                                ON d.id_chapter = c.id_chapter;
-                         """)
-            ##@formatter:on
-            data = current_app.connection.execute(query)
+            query = text("""SELECT 
+                            d.id_devotion, 
+                            d.title, 
+                            d.content, 
+                            d.id_chapter, 
+                            c.chapter_name 
+                         FROM devotion_table d
+                         JOIN chapter_table c ON d.id_chapter = c.id_chapter;""")
+            data = connection.execute(query)
             returnData = []
             for row in data:
                 returnData.append({
@@ -33,14 +28,14 @@ class Devotion:
                     'chapter_name': row[4]
                 })
             response = {
-                'status': True,
-                'msg': 'Success',
+                'status': True, 
+                'msg': 'Success', 
                 'data': returnData
             }
         except Exception as e:
             response['msg'] = f'No data found'
         return response
-
+    
     def insert(self, title, content, id_chapter):
         """ Insert a new devotion
 
@@ -54,15 +49,14 @@ class Devotion:
         """
         response = {'status': False, 'msg': 'Database error'}
         try:
-            query = text(
-                "INSERT INTO devotion_table (id_devotion, title, content, id_chapter) VALUES (NULL, :title, :content, :id_chapter);")
+            query = text("INSERT INTO devotion_table (id_devotion, title, content, id_chapter) VALUES (NULL, :title, :content, :id_chapter);")
             params = {'title': title, 'content': content, 'id_chapter': id_chapter}
-            current_app.connection.execute(query, params)
+            connection.execute(query, params)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'Failed to insert new devotion'
         return response
-
+    
     def update(self, id_devotion, title, content, id_chapter):
         """ Update a certain devotion
 
@@ -77,15 +71,14 @@ class Devotion:
         """
         response = {'status': False, 'msg': 'Database error'}
         try:
-            query = text(
-                "UPDATE devotion_table SET title = :title, content = :content, id_chapter = :id_chapter WHERE id_devotion = :id_devotion;")
+            query = text("UPDATE devotion_table SET title = :title, content = :content, id_chapter = :id_chapter WHERE id_devotion = :id_devotion;")
             params = {'id_devotion': id_devotion, 'title': title, 'content': content, 'id_chapter': id_chapter}
-            current_app.connection.execute(query, params)
+            connection.execute(query, params)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'Failed to update devotion'
         return response
-
+    
     def delete(self, id_devotion):
         """ Delete a certain devotion
 
@@ -98,29 +91,30 @@ class Devotion:
         response = {'status': False, 'msg': 'Database error'}
         try:
             query = text("DELETE FROM devotion_table WHERE id_devotion = :id_devotion;")
-
+            
             params = {"id_devotion": id_devotion}
-            current_app.connection.execute(query, params)
+            connection.execute(query, params)
             response = {'status': True, 'msg': 'Success'}
         except Exception as e:
             response['msg'] = f'Cannot delete devotion!'
         return response
-
+    
     def get_devotion_by_id(self, id_devotion):
         """
         Get devotion content by given id_devotion
         """
         response = {'status': False, 'msg': 'Database error'}
         try:
-            query = text("""SELECT d.title,
-                                   d.content,
-                                   d.id_chapter,
-                                   c.chapter_name
-                            FROM devotion_table d
-                                     JOIN chapter_table c ON d.id_chapter = c.id_chapter
-                            WHERE d.id_devotion = :id_devotion;""")
+            query = text("""SELECT 
+                            d.title, 
+                            d.content, 
+                            d.id_chapter, 
+                            c.chapter_name 
+                         FROM devotion_table d
+                         JOIN chapter_table c ON d.id_chapter = c.id_chapter
+                         WHERE d.id_devotion = :id_devotion;""")
             params = {'id_devotion': id_devotion}
-            data = current_app.connection.execute(query, params)
+            data = connection.execute(query, params)
             returnData = []
             for row in data:
                 returnData.append({
@@ -130,8 +124,8 @@ class Devotion:
                     'chapter_name': row[3]
                 })
             response = {
-                'status': True,
-                'msg': 'Success',
+                'status': True, 
+                'msg': 'Success', 
                 'data': returnData
             }
         except Exception as e:
